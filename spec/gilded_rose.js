@@ -48,4 +48,16 @@ describe('gilded_rose_should', function () {
       expect(item.quality).to.be.equals(decreased_quality_twice_faster);
   });
 
+   it('aged_brie_increases_in_quality_the_older_it_gets', function () {
+
+      var quality = 20;
+      var sell_in = 30;
+      var increased_quality = 21;
+      var aged_brie = new Item("Aged Brie", sell_in, quality);
+
+      Process([aged_brie]);
+
+      expect(aged_brie.quality).to.be.equals(increased_quality);
+  });
+
 });
