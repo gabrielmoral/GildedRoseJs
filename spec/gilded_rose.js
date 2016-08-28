@@ -36,4 +36,16 @@ describe('gilded_rose_should', function () {
      expect(item.quality).to.not.be.below(positive_numbers_edge);
   });
 
+  it('quality_decrease_twice_when_sell_by_date_has_passed', function () {
+
+      var quality = 20;
+      var sell_in = 0;
+      var decreased_quality_twice_faster = 18;
+      var item = new Item("Some", sell_in, quality);
+
+      Process([item]);
+
+      expect(item.quality).to.be.equals(decreased_quality_twice_faster);
+  });
+
 });
