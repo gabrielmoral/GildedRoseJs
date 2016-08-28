@@ -25,4 +25,15 @@ describe('gilded_rose_should', function () {
     expect(item.quality).to.be.equals(decreased_quality);
   });
 
+   it('quality_of_an_item_is_never_negative', function () {
+     
+     var quality, sell_in = 0;
+     var positive_numbers_edge = 0;
+     var item = new Item("Some", sell_in, quality);
+
+     Process([item]);
+
+     expect(item.quality).to.not.be.below(positive_numbers_edge);
+  });
+
 });
