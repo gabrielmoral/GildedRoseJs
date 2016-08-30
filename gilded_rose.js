@@ -23,36 +23,52 @@ function update_quality(items) {
   for (var i = 0; i < items.length; i++) {
     if (items[i].name != aged_brie && items[i].name != backstage_passes) {
       if (items[i].quality > 0 && items[i].name != sulfuras) {
-        items[i].quality = items[i].quality - 1
+         decrease_quality(items[i]);
       }
     } else {
       if (items[i].quality < 50) {
-        items[i].quality = items[i].quality + 1
+        increase_quality(items[i]);
         if (items[i].name == backstage_passes && items[i].sell_in < 11 && items[i].quality < 50) {
-          items[i].quality = items[i].quality + 1
+          increase_quality(items[i]);
           if (items[i].sell_in < 6 && items[i].quality < 50) {
-            items[i].quality = items[i].quality + 1
+            increase_quality(items[i]);
           }
         }
       }
     }
     if (items[i].name != sulfuras) {
-      items[i].sell_in = items[i].sell_in - 1;
+      decrease_sell_in(items[i]);
     }
     if (items[i].sell_in < 0) {
       if (items[i].name != aged_brie) {
         if (items[i].name != backstage_passes) {
           if (items[i].quality > 0 && items[i].name != sulfuras) {
-              items[i].quality = items[i].quality - 1
+              decrease_quality(items[i]);
           }
         } else {
-          items[i].quality = items[i].quality - items[i].quality
+          remove_quality(items[i]);
         }
       } else {
         if (items[i].quality < 50) {
-          items[i].quality = items[i].quality + 1
+          increase_quality(items[i]);
         }
       }
     }
+  }
+
+  function decrease_sell_in(item){
+    item.sell_in = item.sell_in - 1;
+  }
+
+  function increase_quality(item){
+    item.quality = item.quality + 1;
+  }
+
+  function decrease_quality(item){
+    item.quality = item.quality - 1;
+  }
+
+  function remove_quality(item){
+    item.quality = 0;
   }
 }
