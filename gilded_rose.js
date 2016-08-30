@@ -21,54 +21,59 @@ function update_quality(items) {
   var sulfuras = 'Sulfuras, Hand of Ragnaros';
 
   for (var i = 0; i < items.length; i++) {
-    if (items[i].name != aged_brie && items[i].name != backstage_passes) {
-      if (items[i].quality > 0 && items[i].name != sulfuras) {
-         decrease_quality(items[i]);
+    var item = items[i];
+
+    if (item.name != aged_brie && item.name != backstage_passes) {
+      if (item.quality > 0 && item.name != sulfuras) {
+        decrease_quality(item);
       }
     } else {
-      if (items[i].quality < 50) {
-        increase_quality(items[i]);
-        if (items[i].name == backstage_passes && items[i].sell_in < 11 && items[i].quality < 50) {
-          increase_quality(items[i]);
-          if (items[i].sell_in < 6 && items[i].quality < 50) {
-            increase_quality(items[i]);
-          }
+      increase_quality(item);
+      if (item.name == backstage_passes && item.sell_in < 11) {
+        increase_quality(item);
+        if (item.sell_in < 6) {
+          increase_quality(item);
         }
       }
     }
-    if (items[i].name != sulfuras) {
-      decrease_sell_in(items[i]);
+    if (item.name != sulfuras) {
+      decrease_sell_in(item);
     }
-    if (items[i].sell_in < 0) {
-      if (items[i].name != aged_brie) {
-        if (items[i].name != backstage_passes) {
-          if (items[i].quality > 0 && items[i].name != sulfuras) {
-              decrease_quality(items[i]);
+    if (item.sell_in < 0) {
+      if (item.name != aged_brie) {
+        if (item.name != backstage_passes) {
+          if (item.quality > 0 && item.name != sulfuras) {
+            decrease_quality(item);
           }
         } else {
-          remove_quality(items[i]);
+          remove_quality(item);
         }
       } else {
-        if (items[i].quality < 50) {
-          increase_quality(items[i]);
-        }
+        increase_quality(item);
       }
     }
   }
 
-  function decrease_sell_in(item){
+  function decrease_sell_in(item) {
     item.sell_in = item.sell_in - 1;
   }
 
-  function increase_quality(item){
-    item.quality = item.quality + 1;
-  }
-
-  function decrease_quality(item){
+  function decrease_quality(item) {
     item.quality = item.quality - 1;
   }
 
-  function remove_quality(item){
+  function remove_quality(item) {
     item.quality = 0;
+  }
+
+  function increase_quality(item) {
+    if (has_max_quality(item)) return;
+
+    item.quality = item.quality + 1;
+  }
+
+  function has_max_quality(item) {
+    var max_item_quality = 50;
+    return item.quality === max_item_quality;
   }
 }
