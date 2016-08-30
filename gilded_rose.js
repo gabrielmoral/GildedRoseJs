@@ -20,11 +20,13 @@ function update_quality(items) {
   var backstage_passes = 'Backstage passes to a TAFKAL80ETC concert';
   var sulfuras = 'Sulfuras, Hand of Ragnaros';
 
-  for (var i = 0; i < items.length; i++) {
-    var item = items[i];
+  var items_to_be_processed = items.filter(item => item.name !== sulfuras);
+
+  for (var i = 0; i < items_to_be_processed.length; i++) {
+    var item = items_to_be_processed[i];
 
     if (item.name != aged_brie && item.name != backstage_passes) {
-      if (item.quality > 0 && item.name != sulfuras) {
+      if (item.quality > 0) {
         decrease_quality(item);
       }
     } else {
@@ -36,13 +38,13 @@ function update_quality(items) {
         }
       }
     }
-    if (item.name != sulfuras) {
-      decrease_sell_in(item);
-    }
+    
+    decrease_sell_in(item);
+    
     if (item.sell_in < 0) {
       if (item.name != aged_brie) {
         if (item.name != backstage_passes) {
-          if (item.quality > 0 && item.name != sulfuras) {
+          if (item.quality > 0) {
             decrease_quality(item);
           }
         } else {
