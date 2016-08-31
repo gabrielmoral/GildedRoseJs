@@ -24,27 +24,35 @@ function update_quality(items) {
 
   for (var i = 0; i < items_to_be_processed.length; i++) {
     var item = items_to_be_processed[i];
+    var is_aged_brie = item.name == aged_brie;
+    var is_backstage_passes = item.name == backstage_passes;
 
-    if (item.name != aged_brie && item.name != backstage_passes) {
-      if (item.quality > 0) {
-        decrease_quality(item);
-      }
-    } else {
+    if (!is_aged_brie &&
+      !is_backstage_passes &&
+      has_some_quality(item)) {
+      decrease_quality(item);
+    }    else {
+
       increase_quality(item);
-      if (item.name == backstage_passes && item.sell_in < 11) {
-        increase_quality(item);
-        if (item.sell_in < 6) {
+
+      if (is_backstage_passes) {
+
+        if (sell_in_lower_than(item, 11)) {
+          increase_quality(item);
+        }
+
+        if (sell_in_lower_than(item, 6)) {
           increase_quality(item);
         }
       }
     }
-    
+
     decrease_sell_in(item);
-    
-    if (item.sell_in < 0) {
-      if (item.name != aged_brie) {
-        if (item.name != backstage_passes) {
-          if (item.quality > 0) {
+
+    if (sell_in_lower_than(item, 0)) {
+      if (!is_aged_brie) {
+        if (!is_backstage_passes) {
+          if (has_some_quality(item)) {
             decrease_quality(item);
           }
         } else {
@@ -54,6 +62,10 @@ function update_quality(items) {
         increase_quality(item);
       }
     }
+  }
+
+  function sell_in_lower_than(item, days) {
+    return item.sell_in < days;
   }
 
   function decrease_sell_in(item) {
@@ -77,5 +89,10 @@ function update_quality(items) {
   function has_max_quality(item) {
     var max_item_quality = 50;
     return item.quality === max_item_quality;
+  }
+
+  function has_some_quality(item) {
+    var minimum_item_quality = 0;
+    return item.quality > minimum_item_quality;
   }
 }
