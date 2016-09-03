@@ -13,7 +13,30 @@ function Item(name, sell_in, quality) {
   this.quality = quality;
 }
 
+function AgedBrie(item) {
 
+  AgedBrie.prototype.update_quality = () => {
+    increase_quality();
+    decrease_sell_in(item);
+  }
+
+  function increase_quality() {
+    if (has_max_quality()) return;
+    item.quality = item.quality + 1;
+  }
+
+  function decrease_sell_in() {
+    item.sell_in = item.sell_in - 1;
+  }
+
+  function sell_in_lower_than(days) {
+    return item.sell_in < days;
+  }
+  function has_max_quality() {
+    var max_item_quality = 50;
+    return item.quality === max_item_quality;
+  }
+}
 
 function BackstagePass(item) {
 
@@ -68,19 +91,20 @@ function update_quality(items) {
     .map(item => new BackstagePass(item))
     .forEach(backstage_pass => backstage_pass.update_quality());
 
-
+  items_to_be_processed.filter(item => item.name == aged_brie)
+    .map(item => new AgedBrie(item))
+    .forEach(aged_brie => aged_brie.update_quality());
 
   for (var i = 0; i < items_to_be_processed.length; i++) {
     var item = items_to_be_processed[i];
     var is_aged_brie = item.name == aged_brie;
     var is_backstage_passes = item.name == backstage_passes;
 
-    if (is_backstage_passes) {
+    if (is_backstage_passes || is_aged_brie) {
       continue;
     }
 
-    if (!is_aged_brie &&
-      has_some_quality(item)) {
+    if (has_some_quality(item)) {
       decrease_quality(item);
     } else {
       increase_quality(item);
@@ -89,12 +113,8 @@ function update_quality(items) {
     decrease_sell_in(item);
 
     if (sell_in_lower_than(item, 0)) {
-      if (!is_aged_brie) {
-          if (has_some_quality(item)) {
-            decrease_quality(item);
-          }
-      } else {
-        increase_quality(item);
+      if (has_some_quality(item)) {
+        decrease_quality(item);
       }
     }
   }
