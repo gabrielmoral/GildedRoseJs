@@ -97,10 +97,8 @@ function update_quality(items) {
 
     if (has_some_quality(item)) {
       decrease_quality(item);
-    } else {
-      increase_quality(item);
-    }
-
+    } 
+    
     decrease_sell_in(item);
 
     if (sell_in_lower_than(item, 0)) {
