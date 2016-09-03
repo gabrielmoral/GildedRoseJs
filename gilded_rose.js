@@ -26,6 +26,10 @@ var itemPrototype = {
   has_max_quality: function () {
     var max_item_quality = 50;
     return this.item.quality === max_item_quality;
+  },
+
+  sell_in_lower_than : function(days) {
+    return this.item.sell_in < days;
   }
 }
 
@@ -38,22 +42,49 @@ function AgedBrie(item) {
   }
 }
 
+function RegularItem(item) {
+  this.item = item;
+
+  RegularItem.prototype.update_quality = () => {
+    if (has_some_quality()) {
+      decrease_quality();
+    }
+
+    this.decrease_sell_in();
+
+    if (this.sell_in_lower_than(0)) {
+      if (has_some_quality()) {
+        decrease_quality();
+      }
+    }
+  }
+
+  function has_some_quality() {
+    var minimum_item_quality = 0;
+    return item.quality > minimum_item_quality;
+  }
+
+  function decrease_quality() {
+    item.quality = item.quality - 1;
+  }
+}
+
 function BackstagePass(item) {
   this.item = item;
 
   BackstagePass.prototype.update_quality = () => {
 
-    if (sell_in_lower_than(11)) {
+    if (this.sell_in_lower_than(11)) {
       this.increase_quality();
     }
 
-    if (sell_in_lower_than(6)) {
+    if (this.sell_in_lower_than(6)) {
       this.increase_quality();
     }
     this.increase_quality();
     this.decrease_sell_in();
 
-    if (sell_in_lower_than(0)) {
+    if (this.sell_in_lower_than(0)) {
       remove_quality();
     }
   }
@@ -61,14 +92,11 @@ function BackstagePass(item) {
   function remove_quality() {
     item.quality = 0;
   }
-
-  function sell_in_lower_than(days) {
-    return item.sell_in < days;
-  }
 }
 
 BackstagePass.prototype = itemPrototype;
 AgedBrie.prototype = itemPrototype;
+RegularItem.prototype = itemPrototype;
 
 function update_quality(items) {
 
@@ -86,53 +114,7 @@ function update_quality(items) {
     .map(item => new AgedBrie(item))
     .forEach(aged_brie => aged_brie.update_quality());
 
-  for (var i = 0; i < items_to_be_processed.length; i++) {
-    var item = items_to_be_processed[i];
-    var is_aged_brie = item.name == aged_brie;
-    var is_backstage_passes = item.name == backstage_passes;
-
-    if (is_backstage_passes || is_aged_brie) {
-      continue;
-    }
-
-    if (has_some_quality(item)) {
-      decrease_quality(item);
-    } 
-    
-    decrease_sell_in(item);
-
-    if (sell_in_lower_than(item, 0)) {
-      if (has_some_quality(item)) {
-        decrease_quality(item);
-      }
-    }
-  }
-
-  function sell_in_lower_than(item, days) {
-    return item.sell_in < days;
-  }
-
-  function decrease_sell_in(item) {
-    item.sell_in = item.sell_in - 1;
-  }
-
-  function decrease_quality(item) {
-    item.quality = item.quality - 1;
-  }
-
-  function increase_quality(item) {
-    if (has_max_quality(item)) return;
-
-    item.quality = item.quality + 1;
-  }
-
-  function has_max_quality(item) {
-    var max_item_quality = 50;
-    return item.quality === max_item_quality;
-  }
-
-  function has_some_quality(item) {
-    var minimum_item_quality = 0;
-    return item.quality > minimum_item_quality;
-  }
+  items_to_be_processed.filter(item => item.name != aged_brie && item.name != backstage_passes)
+    .map(item => new RegularItem(item))
+    .forEach(regular_item => regular_item.update_quality());
 }
