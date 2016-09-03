@@ -13,57 +13,49 @@ function Item(name, sell_in, quality) {
   this.quality = quality;
 }
 
+var itemPrototype = {
+  increase_quality: function () {
+    if (this.has_max_quality()) return;
+    this.item.quality = this.item.quality + 1;
+  },
+
+  decrease_sell_in: function () {
+    this.item.sell_in = this.item.sell_in - 1;
+  },
+
+  has_max_quality: function () {
+    var max_item_quality = 50;
+    return this.item.quality === max_item_quality;
+  }
+}
+
 function AgedBrie(item) {
+  this.item = item;
 
   AgedBrie.prototype.update_quality = () => {
-    increase_quality();
-    decrease_sell_in(item);
-  }
-
-  function increase_quality() {
-    if (has_max_quality()) return;
-    item.quality = item.quality + 1;
-  }
-
-  function decrease_sell_in() {
-    item.sell_in = item.sell_in - 1;
-  }
-
-  function sell_in_lower_than(days) {
-    return item.sell_in < days;
-  }
-  function has_max_quality() {
-    var max_item_quality = 50;
-    return item.quality === max_item_quality;
+    this.increase_quality();
+    this.decrease_sell_in(item);
   }
 }
 
 function BackstagePass(item) {
+  this.item = item;
 
   BackstagePass.prototype.update_quality = () => {
 
     if (sell_in_lower_than(11)) {
-      increase_quality();
+      this.increase_quality();
     }
 
     if (sell_in_lower_than(6)) {
-      increase_quality();
+      this.increase_quality();
     }
-    increase_quality();
-    decrease_sell_in();
+    this.increase_quality();
+    this.decrease_sell_in();
 
     if (sell_in_lower_than(0)) {
       remove_quality();
     }
-  }
-
-  function increase_quality() {
-    if (has_max_quality()) return;
-    item.quality = item.quality + 1;
-  }
-
-  function decrease_sell_in() {
-    item.sell_in = item.sell_in - 1;
   }
 
   function remove_quality() {
@@ -73,11 +65,10 @@ function BackstagePass(item) {
   function sell_in_lower_than(days) {
     return item.sell_in < days;
   }
-  function has_max_quality() {
-    var max_item_quality = 50;
-    return item.quality === max_item_quality;
-  }
 }
+
+BackstagePass.prototype = itemPrototype;
+AgedBrie.prototype = itemPrototype;
 
 function update_quality(items) {
 
@@ -129,10 +120,6 @@ function update_quality(items) {
 
   function decrease_quality(item) {
     item.quality = item.quality - 1;
-  }
-
-  function remove_quality(item) {
-    item.quality = 0;
   }
 
   function increase_quality(item) {
