@@ -22,6 +22,7 @@ describe('gilded_rose_should', function () {
       .add_normal_item()
       .add_aged_brie()
       .add_backstage_passes()
+      .add_conjured()
       .with_quality(4)
       .with_sell_in(4)
       .get_items();
@@ -51,6 +52,7 @@ describe('gilded_rose_should', function () {
     var positive_numbers_edge = 0;
     var items = new ItemsBuilder()
       .add_normal_item()
+      .add_conjured()
       .with_quality(0)
       .get_items();
 
@@ -160,6 +162,19 @@ describe('gilded_rose_should', function () {
 
     expect(backstage_pass.quality).to.be.equals(quality);
   });
+
+    it('conjured_items_degrade_quality_twice_as_fast_as_normal_items', function () {
+
+    var degraded_quality = 8;
+    var conjured_item = new ItemsBuilder()
+      .add_conjured()
+      .with_quality(10)
+      .get_items()[0];
+
+    Process([conjured_item]);
+
+    expect(conjured_item.quality).to.be.equals(degraded_quality);
+  });
 });
 
 function ItemsBuilder() {
@@ -183,6 +198,11 @@ function ItemsBuilder() {
 
   this.add_sulfuras = function () {
     items.push(new Item("Sulfuras, Hand of Ragnaros", 20, 20));
+    return this;
+  }
+
+  this.add_conjured = function () {
+    items.push(new Item("Conjured", 20, 20));
     return this;
   }
 
