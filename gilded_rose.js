@@ -33,9 +33,7 @@ var decoratedItem = function (item) {
 
     sell_in_lower_than: function (days) {
       return _item.sell_in < days;
-    },
-
-    properties: _item,
+    }
   };
 }
 
@@ -51,25 +49,25 @@ function AgedBrie(item) {
 }
 
 function RegularItem(item) {
-  var _item = decoratedItem(item);
+  var decorated_item = decoratedItem(item);
 
   var decrease_quality = function () {
     if (!has_quality()) return;
-    _item.properties.quality -= 1;
+    item.quality -= 1;
   }
 
   function has_quality() {
     var minimum_item_quality = 0;
-    return _item.properties.quality > minimum_item_quality;
+    return item.quality > minimum_item_quality;
   }
 
   return {
     update_quality: function () {
       decrease_quality();
 
-      _item.decrease_sell_in();
+      decorated_item.decrease_sell_in();
 
-      if (_item.sell_in_lower_than(0)) {
+      if (decorated_item.sell_in_lower_than(0)) {
         decrease_quality();
       }
     },
@@ -90,26 +88,26 @@ function ConjuredItem(item) {
 }
 
 function BackstagePass(item) {
-  var _item = decoratedItem(item);
+  var decorated_item = decoratedItem(item);
 
   function remove_quality() {
-    _item.properties.quality = 0;
+    item.quality = 0;
   }
 
   return {
     update_quality: function () {
 
-      if (_item.sell_in_lower_than(11)) {
-        _item.increase_quality();
+      if (decorated_item.sell_in_lower_than(11)) {
+        decorated_item.increase_quality();
       }
 
-      if (_item.sell_in_lower_than(6)) {
-        _item.increase_quality();
+      if (decorated_item.sell_in_lower_than(6)) {
+        decorated_item.increase_quality();
       }
-      _item.increase_quality();
-      _item.decrease_sell_in();
+      decorated_item.increase_quality();
+      decorated_item.decrease_sell_in();
 
-      if (_item.sell_in_lower_than(0)) {
+      if (decorated_item.sell_in_lower_than(0)) {
         remove_quality();
       }
     }
