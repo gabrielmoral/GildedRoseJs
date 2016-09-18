@@ -38,12 +38,12 @@ var decoratedItem = function (item) {
 }
 
 function AgedBrie(item) {
-  var _item = decoratedItem(item);
+  var decorated_item = decoratedItem(item);
 
   return {
     update_quality: function () {
-      _item.increase_quality();
-      _item.decrease_sell_in();
+      decorated_item.increase_quality();
+      decorated_item.decrease_sell_in();
     }
   };
 }
