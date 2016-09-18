@@ -13,112 +13,109 @@ function Item(name, sell_in, quality) {
   this.quality = quality;
 }
 
-var itemPrototype = {
-  increase_quality: function () {
-    if (this.has_max_quality()) return;
-    this.item.quality = this.item.quality + 1;
-  },
+var decoratedItem = function (item) {
+  var _item = item;
 
-  decrease_sell_in: function () {
-    this.item.sell_in = this.item.sell_in - 1;
-  },
-
-  has_max_quality: function () {
+  function has_max_quality () {
     var max_item_quality = 50;
-    return this.item.quality === max_item_quality;
-  },
-
-  sell_in_lower_than: function (days) {
-    return this.item.sell_in < days;
-  }
-}
-
-function AgedBrie(item) {
-  this.item = item;
-
-  var update_quality = () => {
-    this.increase_quality();
-    this.decrease_sell_in();
+    return _item.quality === max_item_quality;
   }
 
   return {
-    update_quality : update_quality
+    increase_quality: function () {
+      if (has_max_quality()) return;
+      _item.quality += 1;
+    },
+
+    decrease_sell_in: function () {
+      _item.sell_in -= 1;
+    },
+
+    sell_in_lower_than: function (days) {
+      return _item.sell_in < days;
+    },
+
+    properties: _item,
+  };
+}
+
+function AgedBrie(item) {
+  var _item = decoratedItem(item);
+
+  return {
+    update_quality: function () {
+      _item.increase_quality();
+      _item.decrease_sell_in();
+    }
   };
 }
 
 function RegularItem(item) {
-  this.item = item;
+  var _item = decoratedItem(item);
 
-  var update_quality = () => {
-    decrease_quality();
-
-    this.decrease_sell_in();
-
-    if (this.sell_in_lower_than(0)) {
-      decrease_quality();
-    }
-  }
-
-  var decrease_quality = () => {
+  var decrease_quality = function () {
     if (!has_quality()) return;
-    item.quality = item.quality - 1;
+    _item.properties.quality -= 1;
   }
 
   function has_quality() {
     var minimum_item_quality = 0;
-    return item.quality > minimum_item_quality;
+    return _item.properties.quality > minimum_item_quality;
   }
 
   return {
-    update_quality : update_quality,
-    decrease_quality : decrease_quality
+    update_quality: function () {
+      decrease_quality();
+
+      _item.decrease_sell_in();
+
+      if (_item.sell_in_lower_than(0)) {
+        decrease_quality();
+      }
+    },
+
+    decrease_quality: decrease_quality
   };
 }
 
 function ConjuredItem(item) {
-  var update_quality = () => {
-    var regular_item = new RegularItem(item);
-    regular_item.update_quality();
-    regular_item.decrease_quality();
-  }
-
   return {
-    update_quality : update_quality
+    update_quality: function () {
+      var regular_item = RegularItem(item);
+
+      regular_item.update_quality();
+      regular_item.decrease_quality();
+    }
   };
 }
 
 function BackstagePass(item) {
-  this.item = item;
-
-  var update_quality = () => {
-
-    if (this.sell_in_lower_than(11)) {
-      this.increase_quality();
-    }
-
-    if (this.sell_in_lower_than(6)) {
-      this.increase_quality();
-    }
-    this.increase_quality();
-    this.decrease_sell_in();
-
-    if (this.sell_in_lower_than(0)) {
-      remove_quality();
-    }
-  }
+  var _item = decoratedItem(item);
 
   function remove_quality() {
-    item.quality = 0;
+    _item.properties.quality = 0;
   }
 
   return {
-    update_quality : update_quality
+    update_quality: function () {
+
+      if (_item.sell_in_lower_than(11)) {
+        _item.increase_quality();
+      }
+
+      if (_item.sell_in_lower_than(6)) {
+        _item.increase_quality();
+      }
+      _item.increase_quality();
+      _item.decrease_sell_in();
+
+      if (_item.sell_in_lower_than(0)) {
+        remove_quality();
+      }
+    }
   };
 }
 
-BackstagePass.prototype = itemPrototype;
-AgedBrie.prototype = itemPrototype;
-RegularItem.prototype = itemPrototype;
 
 function update_quality(items) {
 
@@ -128,10 +125,10 @@ function update_quality(items) {
 
 function map_item(item) {
   var items = {
-    'Sulfuras, Hand of Ragnaros' : { update_quality: () => { } },
-    'Aged Brie' : new AgedBrie(item),
-    'Backstage passes to a TAFKAL80ETC concert' : new BackstagePass(item),
-    'Conjured' : new ConjuredItem(item)
+    'Sulfuras, Hand of Ragnaros': { update_quality: () => { } },
+    'Aged Brie': AgedBrie(item),
+    'Backstage passes to a TAFKAL80ETC concert': BackstagePass(item),
+    'Conjured': ConjuredItem(item)
   };
 
   var no_regular_item = items[item.name];
@@ -140,5 +137,5 @@ function map_item(item) {
     return no_regular_item;
   }
 
-  return new RegularItem(item);
+  return RegularItem(item);
 }
