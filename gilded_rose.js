@@ -36,26 +36,30 @@ var itemPrototype = {
 function AgedBrie(item) {
   this.item = item;
 
-  this.update_quality = () => {
+  var update_quality = () => {
     this.increase_quality();
     this.decrease_sell_in();
   }
+
+  return {
+    update_quality : update_quality
+  };
 }
 
 function RegularItem(item) {
   this.item = item;
 
-  this.update_quality = () => {
-    this.decrease_quality();
+  var update_quality = () => {
+    decrease_quality();
 
     this.decrease_sell_in();
 
     if (this.sell_in_lower_than(0)) {
-      this.decrease_quality();
+      decrease_quality();
     }
   }
 
-  this.decrease_quality = () => {
+  var decrease_quality = () => {
     if (!has_quality()) return;
     item.quality = item.quality - 1;
   }
@@ -64,20 +68,29 @@ function RegularItem(item) {
     var minimum_item_quality = 0;
     return item.quality > minimum_item_quality;
   }
+
+  return {
+    update_quality : update_quality,
+    decrease_quality : decrease_quality
+  };
 }
 
 function ConjuredItem(item) {
-  this.update_quality = () => {
+  var update_quality = () => {
     var regular_item = new RegularItem(item);
     regular_item.update_quality();
     regular_item.decrease_quality();
   }
+
+  return {
+    update_quality : update_quality
+  };
 }
 
 function BackstagePass(item) {
   this.item = item;
 
-  this.update_quality = () => {
+  var update_quality = () => {
 
     if (this.sell_in_lower_than(11)) {
       this.increase_quality();
@@ -97,6 +110,10 @@ function BackstagePass(item) {
   function remove_quality() {
     item.quality = 0;
   }
+
+  return {
+    update_quality : update_quality
+  };
 }
 
 BackstagePass.prototype = itemPrototype;
